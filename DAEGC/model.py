@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from layer import GATLayer
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
 class GAT(nn.Module):
@@ -24,3 +25,15 @@ class GAT(nn.Module):
     def dot_product_decode(self, Z):
         A_pred = torch.sigmoid(torch.matmul(Z, Z.t()))
         return A_pred
+
+
+class pseudo_gat(nn.Module):
+    def __init__(self, num_features, hidden_size):
+        super(pseudo_gat, self).__init__()
+        self.w1 = nn.Linear(num_features, hidden_size)
+        self.iden = nn.Parameter(data = torch.randn((num_points, hidden_dims),dtype=torch.float).to(device), requires_grad=True)
+
+    def forward(self, x, adj, M):
+        z = self.w1(x) + iden
+        A_pred = torch.sigmoid(torch.matmul(z, z.t()))
+        return A_pred, z
